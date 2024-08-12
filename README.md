@@ -9,6 +9,7 @@
 1. v-bind是单向数据绑定,js流向页面， v-model是双向数据绑定。 但是v-model只在表单类的标签，输入型元素，input，select等标签内可以使用，<p>这个标题标签不能使用  
 1.1 v-bind: 数据绑定，简写为:XXX   
 1.2 v-model 双向数据绑定  
+  1.2.1 v-model:number, 绑定的数据类型是数字
 1.3 v-on 绑定事件，简写为@
 1.4 v-if 条件渲染（控制DOM是否存在）
 1.5 v-show 条件渲染（控制是否显示）
@@ -94,7 +95,7 @@ npm config set registry https://registry.npmmirror.com
 6. 自定义事件， @click.native,否则会当做自定义时间，需要用this.$.emit来处理
 7. 全局事件总线 
 8. 发布订阅 ，先安装pubsub-js的库  npm i pubsun-js
-9. this.nextTick(),
+9. this.nextTick(), //声明周期函数，！！！和activated， deactivated
 10. axios  安装
 11. 解决跨域，Vue-CLI可以开启代理服务器。在vue.config.js中配置.然后Vue-cli重新启动 nup run serve
 ~~~
@@ -109,9 +110,301 @@ devServer:{
 
 }
 ~~~
-# 3.插槽
+# 3.插槽  
+1. 默认插槽
+2. 命名插槽，template标签解析后没有DOM解析后不会有template的标签
+3. 作用域插槽，子类向父类传数据， "template scope='demoName'>"标签包裹。数据在子组件，插槽里面可以自定义样式
 
-# 4.路由
+# 4. Vuex 状态和版本管理
+1. 安装 Vuex 
+~~~
+npm i vuex  //Vue3默认用的是Vuex4, Vue3默认用的是Vuex3，不能混用  
+
+import vuex from 'vuex'
+
+Vue.use(vuex) 
+~~~
+2. vuex模块化，需要把namespaced设置为true
+设置http请求： 
+~~~
+const countOptions = 
+{
+    namespaced: true,
+    actions:{},
+    mutations:{},
+    state:{},
+    getters:{}
+}
+~~~
+
+
+# 5.路由 
+1. 安装 Vue router
+~~~
+新建router.js文件
+import VueRouter from 'vue-router' //使用路由
+import About from './about.vue'
+import Home from './home.vue'
+import News from './news.vue'
+
+export default new VueRouter({
+    routes:[
+        {
+            {
+                path:'/about',
+                component:About
+            },
+            {
+                path:'/homr',
+                component:Home,
+                children:[
+                    {
+                        path:"news",
+                        component:News
+                    }，
+                ] //二级路由
+            },
+        },
+    ]
+})
+
+import Vue from 'vue'              // 引用vue
+
+Vue.use(VueRouter) //应用插件
+
+~~~
+
+2. router-link标签实现路由切换， router-view制定呈现位置
+
+3. 多级路由
+~~~
+export default new VueRouter({
+    routes:[
+        {
+            {
+                path:'/about',
+                component:About
+            },
+            {
+                path:'/home',
+                component:Home,
+                children:[
+                    {
+                        path:"news",
+                        component:News
+                    }，
+                ] //二级路由
+            },
+        },
+    ]
+})
+
+// router-link 中的to需要带上完整的路由 to="/home/news"
+~~~
+4. 路由带参数
+~~~
+<router-link to="/home/message/detail?id=idVal&title=titleVal"></router-link>
+<router-link :to="{
+    path:'/home/message/detail',
+    query:{
+        id: m.id,
+        title: m.title
+
+    }
+}"></router-link> 
+
+~~~
+5. 命名路由。 路由过长，加name属性，直接取name
+~~~
+export default new VueRouter({
+    routes:[
+        {
+            {
+                name:"guanyu",
+                path:'/about',
+                component:About
+            }
+        },
+    ]
+})
+
+使用的时候加上名字
+<router-link to="/home/message/detail?id=idVal&title=titleVal"></router-link>
+<router-link :to="{
+    // path:'/home/message/detail',   //path不用传了
+    name:"guanyu"
+    query:{
+        id: m.id,
+        title: m.title
+
+    }
+}"></router-link> 
+
+~~~
+
+6. 路由history ，router-link如果不需要记录历史记录， 标签加上replace。默认是push模式
+~~~
+//直接跳转到页面
+this.$router.push({
+    name:'',
+    params:{
+        id:'***',
+        title:'***'
+    }
+});
+
+前进和后退
+this.$router.back();
+this.$router.forward();
+this.$router.go(3); 前进3
+~~~
+
+7. 缓存路由组件 
+~~~
+// 不写include,缓存所有的。
+// 换粗多个用数组  <keep-alive :include="['News','Message']">
+<keep-alive include="组件名">
+    <router-view></router-view>
+</keep-alive>
+~~~
+
+8. 新的声明周期钩子，
+~~~
+activated(){  //激活路由组件
+
+} ,
+deactivated()  // 组件失活
+{
+
+}
+~~~
+
+9. 全局路由守卫， 独享路由守卫,组件内守卫
+~~~
+const router = new  VueRouter({
+    routes:[
+        {
+            {
+                path:'/about',
+                component:About
+            },
+            {
+                path:'/home',
+                component:Home,
+                meta:{isAuth: false},  //
+                children:[
+                    {
+                        path:"news",
+                        component:News
+                    }，
+                ] //二级路由
+            },
+        },
+    ]
+})
+
+router.beforeEach((to, from, next) => {
+    if(to.path === "/home/news")
+    {
+        // if(to.meta.isAuth) //或者在每个组件路由上做个是否需要判断的标记
+        if(localStorage.getItem('school') === 'yangCunXiaoXue')
+        {
+            next();
+        } else
+        {
+            alert("学校不对，无权查看");
+        }
+    } else
+    {
+        next();
+    }
+
+} )
+
+// 独享路由守卫
+const router = new  VueRouter({
+    mode:'hash', //有history和hash两种模式，history参数拼在后面，hash会带#，
+    routes:[
+        {
+            {
+                path:'/about',
+                component:About,
+                beforeEnter：(to, from, next)=>
+                {
+                    if(to.path === "/home/news")
+                    {
+                        if(to.meta.isAuth)
+                        {
+                            next();
+                        } else
+                        {
+                            alert("学校不对，无权查看");
+                        }
+                    } else
+                    {
+                        next();
+                    }
+                }
+            },
+            {
+                path:'/home',
+                component:Home,
+                meta:{isAuth: false},  //
+                children:[
+                    {
+                        path:"news",
+                        component:News
+                    }，
+                ] //二级路由
+            },
+        },
+    ]
+})
+
+//组件内守卫, 在组件中写beforeRouteEnter和beforeRouteLeave的方法
+beforeRouteEnter(to, from, next)
+{
+    if(to.path === "/home/news")
+    {
+        // if(to.meta.isAuth) //或者在每个组件路由上做个是否需要判断的标记
+        if(localStorage.getItem('school') === 'yangCunXiaoXue')
+        {
+            next();
+        } else
+        {
+            alert("学校不对，无权查看");
+        }
+    } else
+    {
+        next();
+    }
+}
+~~~
+
+# 上线
+1. 编译 npm run build
+
+# ElementUI
+1. 安装
+~~~
+npm i element-plus
+
+//全部引入
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+
+Vue.use(ElementUI);
+
+// 按需引入 文档：https://element.eleme.cn/#/zh-CN/component/quickstart
+// 还需要安装 npm install babel-plugin-component -D
+
+import {Button, Row} from 'element-ui'
+
+Vue.component(Button.name, Button)
+
+~~~
+
+
 
 
 
