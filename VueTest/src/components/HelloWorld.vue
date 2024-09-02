@@ -22,9 +22,9 @@ export default
 
 <template>
   <div class="greetings">
-    <h1 class="green">这个是msg{{ msg }}</h1>
-    <h1 class="green">这个是{{ name }}</h1>
-    <h1 class="green">这个是{{ address }}</h1>
+    <h1 class="green">这个是msg:{{ msg }}</h1>
+    <h1 class="green">这个是:{{ name }}</h1>
+    <h1 class="green">这个是:{{ address }}</h1>
     <h3>
       You’ve successfully created a project with
       <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a> +

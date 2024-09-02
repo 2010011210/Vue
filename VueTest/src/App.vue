@@ -2,6 +2,7 @@
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
 import Company from './components/Company.vue'
+import TodoListDemo from './components/TodoListDemo.vue'
 </script>
 
 <template>
@@ -9,13 +10,14 @@ import Company from './components/Company.vue'
     <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
 
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-      <Company></Company>
+      <!-- <HelloWorld msg="You did it!" /> -->
+      <!-- <Company></Company> -->
+      <TodoListDemo></TodoListDemo>
     </div>
   </header>
 
   <main>
-    <TheWelcome />
+    <!-- <TheWelcome /> -->
   </main>
 </template>
 
